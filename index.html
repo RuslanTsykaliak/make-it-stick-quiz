@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Make It Stick - Chapter 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .quiz-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+        .option-btn {
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .option-btn:hover {
+            background-color: #eef2ff; /* indigo-50 */
+        }
+        .correct {
+            background-color: #dcfce7; /* green-100 */
+            border-color: #22c55e; /* green-500 */
+        }
+        .incorrect {
+            background-color: #fee2e2; /* red-100 */
+            border-color: #ef4444; /* red-500 */
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div id="quiz-container" class="quiz-container bg-white rounded-xl shadow-lg">
+        <div id="start-screen">
+            <h1 class="text-3xl font-bold text-slate-900 mb-4">Quiz: "Learning Is Misunderstood"</h1>
+            <p class="text-slate-600 mb-6">Test your knowledge of the key concepts from Chapter 1 of "Make It Stick."</p>
+            <p class="text-slate-600 mb-8">There are 20 questions. At the end, you'll see your score and a list of questions to review.</p>
+            <button id="start-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Start Quiz</button>
+        </div>
+
+        <div id="quiz-screen" class="hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-slate-900">Question <span id="question-number"></span> of 20</h2>
+                <div class="text-lg font-bold text-indigo-600">Score: <span id="score">0</span></div>
+            </div>
+            <div id="progress-bar-container" class="w-full bg-slate-200 rounded-full h-2.5 mb-6">
+                <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
+            </div>
+            <p id="question-text" class="text-lg text-slate-700 mb-6 min-h-[6rem]"></p>
+            <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Options will be inserted here -->
+            </div>
+            <button id="next-btn" class="w-full mt-8 bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors hidden">Next Question</button>
+        </div>
+
+        <div id="result-screen" class="hidden">
+            <h1 class="text-3xl font-bold text-slate-900 mb-4">Quiz Complete!</h1>
+            <p class="text-xl text-slate-600 mb-6">Your final score is <span id="final-score" class="font-bold text-indigo-600"></span> out of 20.</p>
+            
+            <div id="review-container">
+                <h2 class="text-2xl font-semibold text-slate-800 mt-8 mb-4">Questions to Review</h2>
+                <p class="text-slate-600 mb-6">Here are the questions you missed. It's a good idea to focus on these concepts.</p>
+                <ul id="wrong-answers-list" class="list-disc pl-5 space-y-4 text-slate-700">
+                    <!-- Incorrect questions will be listed here -->
+                </ul>
+                 <div id="no-wrong-answers" class="hidden text-center py-8 px-4 bg-green-50 rounded-lg">
+                    <p class="text-lg font-medium text-green-700">🎉 Congratulations! You answered all questions correctly! 🎉</p>
+                </div>
+            </div>
+            <button id="restart-btn" class="w-full mt-8 bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Restart Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "What is the book's primary definition of learning?",
+                options: ["Memorizing facts for a test", "Acquiring knowledge and skills and having them readily available from memory", "Reading a textbook multiple times", "Feeling fluent with the material"],
+                answer: "Acquiring knowledge and skills and having them readily available from memory"
+            },
+            {
+                question: "According to the book, when is learning deeper and more durable?",
+                options: ["When it's easy and fast", "When it's done in one long session", "When it's effortful", "When you feel confident immediately"],
+                answer: "When it's effortful"
+            },
+            {
+                question: "How does the book describe our ability to judge our own learning?",
+                options: ["We are excellent judges", "We are poor judges", "We are accurate only when we feel confident", "We can judge well after rereading"],
+                answer: "We are poor judges"
+            },
+            {
+                question: "What are the two most preferred, yet LEAST productive, study strategies mentioned?",
+                options: ["Quizzing and flashcards", "Teaching others and summarizing", "Rereading text and massed practice", "Elaboration and creating mental models"],
+                answer: "Rereading text and massed practice"
+            },
+            {
+                question: "What is 'massed practice'?",
+                options: ["Studying with a large group of people", "Single-minded, rapid-fire repetition of one thing", "Spreading practice out over many days", "A variety of different practice techniques"],
+                answer: "Single-minded, rapid-fire repetition of one thing"
+            },
+            {
+                question: "What is a more effective learning strategy than review by rereading?",
+                options: ["Highlighting", "Retrieval practice", "Making detailed notes", "Passive listening"],
+                answer: "Retrieval practice"
+            },
+            {
+                question: "What simple example of retrieval practice is mentioned in the chapter?",
+                options: ["Watching a video", "Listening to a podcast", "Flashcards", "Highlighting text"],
+                answer: "Flashcards"
+            },
+            {
+                question: "What are two key effects of retrieval practice on memory?",
+                options: ["It makes learning feel easier and faster", "It strengthens memory and interrupts forgetting", "It only works for simple facts", "It requires expensive software"],
+                answer: "It strengthens memory and interrupts forgetting"
+            },
+            {
+                question: "What is the outcome of spacing out your practice sessions?",
+                options: ["Learning feels easier but is forgotten quickly", "It's less effective than cramming for a test", "Retrieval is harder, but it produces longer-lasting learning", "It only works for physical skills"],
+                answer: "Retrieval is harder, but it produces longer-lasting learning"
+            },
+            {
+                question: "What happens when you try to solve a problem BEFORE being taught the solution?",
+                options: ["It confuses you and hinders learning", "It leads to better learning, even if you make errors", "It's a waste of time", "It only works if you get the right answer"],
+                answer: "It leads to better learning, even if you make errors"
+            },
+            {
+                question: "What does the book say about the idea of 'learning styles' (e.g., visual, auditory)?",
+                options: ["It's the most important factor in learning", "It is not supported by empirical research", "It should be the basis for all teaching", "It only applies to young children"],
+                answer: "It is not supported by empirical research"
+            },
+            {
+                question: "What is a 'mental model'?",
+                options: ["A physical model of a concept", "A detailed outline of a chapter", "A mental representation of some external reality", "A type of computer simulation"],
+                answer: "A mental representation of some external reality"
+            },
+            {
+                question: "What is 'elaboration' in the context of learning?",
+                options: ["Studying for extremely long periods", "Giving new material meaning by connecting it with prior knowledge", "Writing very long, detailed notes", "Repeating a definition over and over"],
+                answer: "Giving new material meaning by connecting it with prior knowledge"
+            },
+            {
+                question: "According to the chapter, what does all new learning require?",
+                options: ["A high IQ", "A specific learning style", "A foundation of prior knowledge", "A quiet environment"],
+                answer: "A foundation of prior knowledge"
+            },
+            {
+                question: "What is a major problem with the 'fire hose' method of instruction?",
+                options: ["It's too slow and boring", "It relies on passive reception of information which is not durable", "It involves too much student participation", "It's too expensive to implement"],
+                answer: "It relies on passive reception of information which is not durable"
+            },
+            {
+                question: "Besides being time-consuming, what is a key psychological drawback of rereading?",
+                options: ["It's too difficult for most students", "It creates a false sense of mastery or fluency", "It damages long-term memory", "It requires a teacher to be present"],
+                answer: "It creates a false sense of mastery or fluency"
+            },
+            {
+                question: "How does the chapter suggest we should view testing?",
+                options: ["As a stressful, but necessary evil", "As a tool for learning and identifying weaknesses", "As a way to rank students against each other", "As something to be avoided whenever possible"],
+                answer: "As a tool for learning and identifying weaknesses"
+            },
+            {
+                question: "Compared to rereading a text, what is the effect of a single, simple quiz after a lecture?",
+                options: ["It has no significant effect", "It is less effective than rereading", "It produces better learning and remembering", "It causes anxiety and reduces learning"],
+                answer: "It produces better learning and remembering"
+            },
+            {
+                question: "What is the book's view on whether intellectual ability is 'hardwired' from birth?",
+                options: ["It is completely fixed and cannot be changed", "It is not fixed; effort and learning change the brain", "It only changes during early childhood", "It is determined 90% by genetics"],
+                answer: "It is not fixed; effort and learning change the brain"
+            },
+            {
+                question: "The process of using testing to check our judgment of what we know is called:",
+                options: ["Elaboration", "Generation", "Calibration", "Massed Practice"],
+                answer: "Calibration"
+            }
+        ];
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const startBtn = document.getElementById('start-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        
+        const questionNumberEl = document.getElementById('question-number');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const scoreEl = document.getElementById('score');
+        const progressBar = document.getElementById('progress-bar');
+        
+        const finalScoreEl = document.getElementById('final-score');
+        const wrongAnswersListEl = document.getElementById('wrong-answers-list');
+        const noWrongAnswersEl = document.getElementById('no-wrong-answers');
+
+        // Quiz State
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let wrongAnswers = [];
+
+        // Shuffle questions
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function startQuiz() {
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            wrongAnswers = [];
+            scoreEl.textContent = score;
+            
+            shuffleArray(quizData);
+            showQuestion();
+        }
+
+        function showQuestion() {
+            resetState();
+            const currentQuestion = quizData[currentQuestionIndex];
+            questionNumberEl.textContent = currentQuestionIndex + 1;
+            questionTextEl.textContent = currentQuestion.question;
+            
+            // Shuffle options
+            const shuffledOptions = [...currentQuestion.options];
+            shuffleArray(shuffledOptions);
+
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.innerText = option;
+                button.classList.add('option-btn', 'p-4', 'border-2', 'border-slate-300', 'rounded-lg', 'text-left', 'w-full');
+                button.addEventListener('click', selectAnswer);
+                optionsContainer.appendChild(button);
+            });
+            updateProgressBar();
+        }
+
+        function resetState() {
+            nextBtn.classList.add('hidden');
+            while (optionsContainer.firstChild) {
+                optionsContainer.removeChild(optionsContainer.firstChild);
+            }
+        }
+
+        function selectAnswer(e) {
+            const selectedBtn = e.target;
+            const isCorrect = selectedBtn.innerText === quizData[currentQuestionIndex].answer;
+
+            if (isCorrect) {
+                score++;
+                scoreEl.textContent = score;
+                selectedBtn.classList.add('correct');
+            } else {
+                selectedBtn.classList.add('incorrect');
+                wrongAnswers.push({
+                    question: quizData[currentQuestionIndex].question,
+                    correctAnswer: quizData[currentQuestionIndex].answer,
+                    yourAnswer: selectedBtn.innerText
+                });
+            }
+
+            Array.from(optionsContainer.children).forEach(button => {
+                if (button.innerText === quizData[currentQuestionIndex].answer) {
+                    button.classList.add('correct');
+                }
+                button.disabled = true;
+            });
+
+            nextBtn.classList.remove('hidden');
+        }
+
+        function showNextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+        
+        function updateProgressBar() {
+            const progressPercentage = ((currentQuestionIndex + 1) / quizData.length) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+        }
+
+        function showResults() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            finalScoreEl.textContent = score;
+            
+            wrongAnswersListEl.innerHTML = ''; // Clear previous results
+            
+            if (wrongAnswers.length === 0) {
+                noWrongAnswersEl.classList.remove('hidden');
+                document.getElementById('review-container').querySelector('h2').classList.add('hidden');
+                document.getElementById('review-container').querySelector('p').classList.add('hidden');
+            } else {
+                noWrongAnswersEl.classList.add('hidden');
+                 document.getElementById('review-container').querySelector('h2').classList.remove('hidden');
+                document.getElementById('review-container').querySelector('p').classList.remove('hidden');
+                wrongAnswers.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <p class="font-semibold">${item.question}</p>
+                        <p class="text-sm text-red-600">Your answer: ${item.yourAnswer}</p>
+                        <p class="text-sm text-green-600">Correct answer: ${item.correctAnswer}</p>
+                    `;
+                    wrongAnswersListEl.appendChild(li);
+                });
+            }
+        }
+
+        startBtn.addEventListener('click', startQuiz);
+        nextBtn.addEventListener('click', showNextQuestion);
+        restartBtn.addEventListener('click', startQuiz);
+
+    </script>
+</body>
+</html>
