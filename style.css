@@ -1,0 +1,22 @@
+body {
+    font-family: 'Inter', sans-serif;
+}
+.quiz-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+}
+.option-btn {
+    transition: background-color 0.2s, border-color 0.2s;
+}
+.option-btn:hover {
+    background-color: #eef2ff; /* indigo-50 */
+}
+.correct {
+    background-color: #dcfce7; /* green-100 */
+    border-color: #22c55e; /* green-500 */
+}
+.incorrect {
+    background-color: #fee2e2; /* red-100 */
+    border-color: #ef4444; /* red-500 */
+}
