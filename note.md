@@ -1,0 +1,1 @@
+Are some kinds of retrieval practice more effective for long- term learning than others? Tests that require the learner to supply the answer, like an essay or short-answer test, or sim-ply practice with flashcards, appear to be more effective than simple recognition tests like multiple choice or true/false tests.
