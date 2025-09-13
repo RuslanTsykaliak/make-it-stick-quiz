@@ -10,5 +10,9 @@ const quizManifest = [
     {
         name: "Chapter 3: Mix Up Your Practice",
         variableName: "chapter3MixUpYourPractice"
+    },
+    {
+        name: "Chapter 7: Increase Your Abilities",
+        variableName: "chapter7IncreaseYourAbilities"
     }
 ];
